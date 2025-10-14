@@ -40,7 +40,7 @@ services:
     depends_on:
       - frontend
       - backend
-      - admin
+     # - admin
 
 networks:
   food-del-net:
