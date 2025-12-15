@@ -1,0 +1,7 @@
+-
+ name: Deployment of Food-Del
+ hosts: server-1
+ become: true
+ roles:
+   - docker
+   - food-deploy

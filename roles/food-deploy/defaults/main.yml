@@ -1,0 +1,5 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for food-deploy
+git_repo: "https://github.com/pritz45/ansible-mini-project.git"
+user: "ubuntu"

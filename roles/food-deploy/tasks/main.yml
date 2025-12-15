@@ -1,0 +1,16 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for food-deploy
+- name: Clone Git Repo
+  git:
+    repo: "{{ git_repo }}"
+    dest: /home/ubuntu/ansible-mini-project
+    version: master
+    force: yes
+  register: git_pull ## in ansible the register keyword is used to capture the output of a task into a variable , 
+                     ## here git_pull is the registered variable
+
+- name: Run docker-compose up
+  command: docker-compose up -d
+  args:
+    chdir: /home/ubuntu/ansible-mini-project

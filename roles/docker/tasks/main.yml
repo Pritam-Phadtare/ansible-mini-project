@@ -1,0 +1,79 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for docker
+- name: Install Packages
+  apt:
+  #  update_cache: yes
+    name:
+      - curl
+      - ca-certificates
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+
+- name: Directory for Keyrings
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker Key to tmp path
+  get_url:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    dest: /tmp/docker.asc
+
+- name: Remove GPG key from /etc/apt/keyrings
+  file:
+    path: /etc/apt/keyrings/docker.gpg
+    state: absent
+
+- name: Convert Key to GPG format
+  command: gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.asc
+
+- name: Read Permissions to all identity's and APT
+  file:
+    path: /etc/apt/keyrings/docker.gpg
+    mode: '0644'  ## Read permissions to all user , groups and APT's
+
+- name: Add Docker Repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu jammy stable"
+    filename: docker
+    state: present
+
+- name: Update System
+  apt:
+   update_cache: yes
+   state: present
+
+- name: Install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+
+- name: Add ubuntu user to docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes ## ensures existing group memeberships are not removed
+
+- name: update system
+  apt:
+    update_cache: yes
+
+- name: Install Compose
+  apt:
+    name:
+      - docker-compose
+    state: present
+
+- name: Update Cache
+  apt:
+    update_cache: yes
+  notify: Start Docker Service
